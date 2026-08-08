@@ -1,0 +1,63 @@
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "linkedin-feed-extractor"
+version = "0.1.0"
+description = "Research-oriented LinkedIn feed data extractor using legitimate, user-authorized access."
+readme = "README.md"
+license = {text = "MIT"}
+requires-python = ">=3.10"
+authors = [
+    {name = "Beacon Team"},
+]
+keywords = ["linkedin", "feed", "extractor", "research"]
+
+dependencies = [
+    "pydantic>=2.0",
+    "click>=8.0",
+    "python-dotenv>=1.0",
+    "playwright>=1.40",
+    "rich>=13.0",
+    "structlog>=23.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0",
+    "pytest-asyncio>=0.21",
+    "mypy>=1.5",
+    "ruff>=0.1",
+    "pytest-cov>=4.0",
+]
+
+[project.scripts]
+linkedin-feed = "linkedin_feed_extractor.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+markers = [
+    "unit: Unit tests (no external dependencies)",
+    "integration: Integration tests (requires browser/network)",
+    "experiment: Experimental tests (may be unstable)",
+]
+addopts = "-v --tb=short"
+filterwarnings = ["ignore::DeprecationWarning"]
+
+[tool.ruff]
+target-version = "py311"
+line-length = 100
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "N", "W", "UP", "B", "SIM", "RUF"]
+
+[tool.mypy]
+python_version = "3.11"
+strict = true
+warn_return_any = true
+warn_unused_configs = true
