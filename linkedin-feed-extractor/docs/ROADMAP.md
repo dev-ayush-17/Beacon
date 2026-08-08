@@ -6,21 +6,26 @@ Development progress for LinkedIn Feed Extractor.
 
 - [x] **V0.1** — Project Scaffold
   - Repository structure, configuration, CLI entry point, tests, documentation
-  - Status: ✅ Complete
+  - Status: Complete (commit 6c379a3)
 
-- [ ] **V0.2** — Domain Models
+- [x] **V0.2** — Domain Models
   - FeedPost, Author, PostContent, Engagement, Media, ExtractionResult
-  - Unit tests for all models
+  - 32 unit tests for all models and serialization
+  - Status: Complete (commit bcf0dfc)
 
-- [ ] **V0.3** — Extractor Contract
-  - BaseFeedExtractor interface
-  - MockExtractor implementation
-  - Contract tests
+- [x] **V0.3** — Extractor Contract
+  - BaseFeedExtractor interface with typed contract
+  - MockExtractor with 5 realistic sample posts
+  - Configurable failure simulation
+  - 17 contract + mock tests
+  - Status: Complete (commit 53980b6)
 
-- [ ] **V0.4** — Session Architecture
+- [x] **V0.4** — Session Architecture
   - Browser profile session management
-  - Secure credential loading
-  - Session validation
+  - Secure credential validation (never logs paths)
+  - Playwright launch argument generation
+  - 11 session tests
+  - Status: Complete (commit 0d2d8c3)
 
 - [ ] **V0.5** — Browser Connectivity Experiment
   - Start browser with authenticated session
@@ -45,7 +50,7 @@ Development progress for LinkedIn Feed Extractor.
   - Deduplication
 
 - [ ] **V0.9** — Normalization Layer
-  - Raw → normalized pipeline
+  - Raw -> normalized pipeline
   - Whitespace, timestamps, engagement parsing
   - Comprehensive unit tests
 
@@ -53,6 +58,15 @@ Development progress for LinkedIn Feed Extractor.
   - End-to-end extraction CLI
   - JSON output
   - Full integration test
+
+## Statistics
+
+| Metric | Value |
+|--------|-------|
+| Total tests | 75 |
+| Tests passing | 75 |
+| Versions complete | 4 of 10 |
+| Total commits | 4 |
 
 ## Future Considerations
 
