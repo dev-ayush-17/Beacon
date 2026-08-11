@@ -7,7 +7,7 @@ Each experiment is a self-contained investigation into a specific approach.
 
 | # | Name | Status | Date | Summary |
 |---|------|--------|------|---------|
-| — | _No experiments yet_ | — | — | Experiments begin at V0.6 |
+| 001 | [Feed DOM Discovery](../experiments/001-feed-dom-discovery.md) | Complete | 2026-08-11 | Identified stable selectors and post structure |
 
 ## Experiment Template
 
