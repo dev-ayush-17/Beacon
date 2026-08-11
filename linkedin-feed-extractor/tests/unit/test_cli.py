@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import json
+
 from click.testing import CliRunner
 
 from linkedin_feed_extractor.cli import main
@@ -31,12 +33,32 @@ class TestCLI:
         assert result.exit_code == 0
         assert "LinkedIn Feed Extractor" in result.output
 
-    def test_cli_extract_not_implemented(self) -> None:
-        """extract command should exit with error (not yet implemented)."""
+    def test_cli_extract_help(self) -> None:
+        """extract --help should show extraction options."""
         runner = CliRunner()
-        result = runner.invoke(main, ["extract"])
-        assert result.exit_code != 0
-        assert "not yet implemented" in result.output.lower()
+        result = runner.invoke(main, ["extract", "--help"])
+        assert result.exit_code == 0
+        assert "--max-posts" in result.output
+        assert "--mock" in result.output
+        assert "--json-stdout" in result.output
+
+    def test_cli_extract_mock(self) -> None:
+        """extract --mock should work without browser."""
+        runner = CliRunner()
+        result = runner.invoke(main, ["extract", "--mock", "-n", "3"])
+        assert result.exit_code == 0
+        assert "SUCCESS" in result.output or "Posts extracted" in result.output
+
+    def test_cli_extract_mock_json_stdout(self) -> None:
+        """extract --mock --json-stdout should output JSON data."""
+        runner = CliRunner()
+        result = runner.invoke(
+            main, ["extract", "--mock", "-n", "2", "--json-stdout"]
+        )
+        assert result.exit_code == 0
+        # Output should contain JSON markers for posts
+        assert '"posts"' in result.output
+        assert '"extractor_name"' in result.output
 
     def test_cli_version_command(self) -> None:
         """version subcommand should print version."""
