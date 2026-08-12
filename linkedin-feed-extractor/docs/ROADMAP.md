@@ -4,75 +4,53 @@ Development progress for LinkedIn Feed Extractor.
 
 ## Versions
 
-- [x] **V0.1** — Project Scaffold
-  - Repository structure, configuration, CLI entry point, tests, documentation
-  - Status: Complete (commit 6c379a3)
-
-- [x] **V0.2** — Domain Models
-  - FeedPost, Author, PostContent, Engagement, Media, ExtractionResult
-  - 32 unit tests for all models and serialization
-  - Status: Complete (commit bcf0dfc)
-
-- [x] **V0.3** — Extractor Contract
-  - BaseFeedExtractor interface with typed contract
-  - MockExtractor with 5 realistic sample posts
-  - Configurable failure simulation
-  - 17 contract + mock tests
-  - Status: Complete (commit 53980b6)
-
-- [x] **V0.4** — Session Architecture
-  - Browser profile session management
-  - Secure credential validation (never logs paths)
-  - Playwright launch argument generation
-  - 11 session tests
-  - Status: Complete (commit 0d2d8c3)
-
-- [ ] **V0.5** — Browser Connectivity Experiment
-  - Start browser with authenticated session
-  - Navigate to LinkedIn feed
-  - Verify authentication status
-  - Diagnostic logging
-
-- [ ] **V0.6** — Feed Page Discovery
-  - DOM structure investigation
-  - Stable selector identification
-  - Lazy loading analysis
-  - Experiment documentation
-
-- [ ] **V0.7** — Single Post Extraction
-  - Extract author, text, URL, timestamp
-  - Graceful handling of missing fields
-  - Normalization tests
-
-- [ ] **V0.8** — Multiple Post Extraction
-  - Multi-post identification
-  - Error tolerance per post
-  - Deduplication
-
-- [ ] **V0.9** — Normalization Layer
-  - Raw -> normalized pipeline
-  - Whitespace, timestamps, engagement parsing
-  - Comprehensive unit tests
-
-- [ ] **V1.0** — Complete Pipeline
-  - End-to-end extraction CLI
-  - JSON output
-  - Full integration test
+- [x] **V0.1** — Project Scaffold (commit 6c379a3)
+- [x] **V0.2** — Domain Models (commit bcf0dfc)
+- [x] **V0.3** — Extractor Contract (commit 53980b6)
+- [x] **V0.4** — Session Architecture (commit 0d2d8c3)
+- [x] **V0.5** — Browser Connectivity (commit cdb00fd)
+- [x] **V0.6** — Feed Page Discovery (commit 4fe7b89)
+- [x] **V0.9** — Normalization Layer (commit 355b6e7)
+- [x] **V1.0** — Complete Pipeline (commit 6977654)
+- [x] **V1.1** — Export Formats & Dedup (commit cc85e51)
+- [x] **V1.2** — Retry & Resilience (commit fa3bd5f)
 
 ## Statistics
 
 | Metric | Value |
 |--------|-------|
-| Total tests | 75 |
-| Tests passing | 75 |
-| Versions complete | 4 of 10 |
-| Total commits | 4 |
+| Total unit tests | 190 |
+| Tests passing | 190 |
+| Versions complete | 10 |
+| Total commits | 10 |
+| Source modules | 9 |
+| Test modules | 8 |
+
+## Source Modules
+
+| Module | Purpose |
+|--------|---------|
+| `config.py` | Environment-based configuration with validation |
+| `models.py` | Pydantic domain models (FeedPost, Author, etc.) |
+| `cli.py` | CLI entry point (status, extract, version) |
+| `session.py` | Browser profile session management |
+| `normalizer.py` | Text, URL, timestamp normalization |
+| `persistence.py` | JSON, CSV, Markdown output |
+| `dedup.py` | Post deduplication and ID generation |
+| `resilience.py` | Retry logic and fallback selectors |
+| `extractor/base.py` | Abstract extractor interface |
+| `extractor/mock.py` | Mock extractor for testing |
+| `extractor/browser.py` | Playwright-based browser extractor |
 
 ## Future Considerations
 
-- API-based extraction (if LinkedIn provides suitable endpoints)
-- Pagination / infinite scroll handling
-- Post type differentiation (articles, polls, shared posts)
-- Media extraction (images, videos)
-- Rate limiting / polite crawling
-- Output format options (CSV, database)
+- [ ] Integrate SelectorFallback into BrowserExtractor
+- [ ] Integrate retry_async into BrowserExtractor navigation
+- [ ] "See more" text expansion (click to reveal full text)
+- [ ] Post URN extraction for stable identification
+- [ ] Pagination / infinite scroll optimization
+- [ ] Media extraction (images, video thumbnails)
+- [ ] Rate limiting / polite crawling delays
+- [ ] Output to SQLite database
+- [ ] Incremental extraction (only new posts since last run)
+- [ ] Post content change tracking
