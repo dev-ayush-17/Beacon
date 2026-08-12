@@ -17,6 +17,7 @@ from rich.table import Table
 
 from linkedin_feed_extractor import __version__
 from linkedin_feed_extractor.config import ExtractorConfig
+from linkedin_feed_extractor.dedup import deduplicate_posts
 from linkedin_feed_extractor.normalizer import FeedNormalizer
 from linkedin_feed_extractor.persistence import ResultPersistence
 
@@ -83,6 +84,12 @@ def status() -> None:
     "--json-stdout", is_flag=True, help="Print JSON to stdout instead of saving file."
 )
 @click.option(
+    "--format", "-f",
+    type=click.Choice(["json", "csv", "markdown", "all"], case_sensitive=False),
+    default="json",
+    help="Output format (default: json).",
+)
+@click.option(
     "--mock", is_flag=True, help="Use mock extractor (no browser needed)."
 )
 @click.pass_context
@@ -91,6 +98,7 @@ def extract(
     max_posts: int | None,
     output: str | None,
     json_stdout: bool,
+    format: str,
     mock: bool,
 ) -> None:
     """Extract feed posts from LinkedIn.
@@ -119,6 +127,9 @@ def extract(
     normalizer = FeedNormalizer()
     result.posts = normalizer.normalize_posts(result.posts)
 
+    # Deduplicate
+    result.posts = deduplicate_posts(result.posts)
+
     # Output results
     if json_stdout:
         persistence = ResultPersistence(config.output_dir)
@@ -130,9 +141,20 @@ def extract(
             output_dir = Path(output)
 
         persistence = ResultPersistence(output_dir)
-        saved_path = persistence.save(result)
+        saved_paths: list[str] = []
+
+        if format in ("json", "all"):
+            path = persistence.save(result)
+            saved_paths.append(str(path))
+        if format in ("csv", "all"):
+            path = persistence.save_csv(result)
+            saved_paths.append(str(path))
+        if format in ("markdown", "all"):
+            path = persistence.save_markdown(result)
+            saved_paths.append(str(path))
+
         console.print()
-        _print_result_summary(result, saved_path)
+        _print_result_summary(result, saved_paths)
 
     # Exit with error code if no posts extracted
     if result.success_count == 0:
@@ -170,7 +192,7 @@ async def _run_extraction(
         await extractor.cleanup()
 
 
-def _print_result_summary(result: "ExtractionResult", saved_path: "Path") -> None:
+def _print_result_summary(result: "ExtractionResult", saved_paths: list[str]) -> None:
     """Print a summary of the extraction results."""
     from pathlib import Path as _Path
 
@@ -185,6 +207,7 @@ def _print_result_summary(result: "ExtractionResult", saved_path: "Path") -> Non
         style = "yellow"
         status_text = "NO DATA"
 
+    saved_info = "\n".join(f"  - {p}" for p in saved_paths) if saved_paths else "N/A"
     console.print(
         Panel(
             f"[bold {style}]{status_text}[/bold {style}]\n\n"
@@ -192,7 +215,7 @@ def _print_result_summary(result: "ExtractionResult", saved_path: "Path") -> Non
             f"Errors: {result.error_count}\n"
             f"Success rate: {result.success_rate:.0f}%\n"
             f"Duration: {result.extraction_duration_seconds or 'N/A'}s\n"
-            f"Saved to: {saved_path}",
+            f"Saved to:\n{saved_info}",
             title="Results",
             border_style=style,
         )
