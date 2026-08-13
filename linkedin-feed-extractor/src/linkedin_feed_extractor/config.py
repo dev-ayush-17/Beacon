@@ -51,6 +51,9 @@ class ExtractorConfig:
     # Headless browser mode
     headless: bool = False
 
+    # LinkedIn session cookie (li_at value)
+    session_cookie: str | None = None
+
     @classmethod
     def from_env(cls) -> ExtractorConfig:
         """Load configuration from environment variables.
@@ -69,6 +72,7 @@ class ExtractorConfig:
             output_dir=Path(os.getenv("LINKEDIN_OUTPUT_DIR", "./output")),
             log_level=os.getenv("LOG_LEVEL", "INFO"),
             headless=os.getenv("LINKEDIN_HEADLESS", "false").lower() == "true",
+            session_cookie=os.getenv("LINKEDIN_SESSION_COOKIE") or None,
         )
 
     def validate(self) -> list[str]:
@@ -78,7 +82,14 @@ class ExtractorConfig:
         """
         issues: list[str] = []
 
+        has_auth = False
+
+        if self.session_cookie:
+            has_auth = True
+            # Don't validate cookie content — just check it's present
+
         if self.browser_profile_path:
+            has_auth = True
             profile_path = Path(self.browser_profile_path)
             if not profile_path.exists():
                 issues.append(
@@ -88,10 +99,11 @@ class ExtractorConfig:
                 issues.append(
                     f"Browser profile path is not a directory: {profile_path}"
                 )
-        else:
+
+        if not has_auth:
             issues.append(
-                "LINKEDIN_BROWSER_PROFILE_PATH is not set. "
-                "Browser session will not be available."
+                "No authentication configured. Set LINKEDIN_SESSION_COOKIE "
+                "or LINKEDIN_BROWSER_PROFILE_PATH in .env."
             )
 
         if self.max_posts < 1:
@@ -109,11 +121,13 @@ class ExtractorConfig:
         return issues
 
     def __repr__(self) -> str:
-        """Safe repr that never exposes sensitive paths."""
+        """Safe repr that never exposes sensitive paths or cookies."""
         profile_status = "SET" if self.browser_profile_path else "NOT SET"
+        cookie_status = "SET" if self.session_cookie else "NOT SET"
         return (
             f"ExtractorConfig("
             f"browser_profile={profile_status}, "
+            f"session_cookie={cookie_status}, "
             f"profile_name='{self.browser_profile_name}', "
             f"max_posts={self.max_posts}, "
             f"timeout={self.page_timeout}s, "

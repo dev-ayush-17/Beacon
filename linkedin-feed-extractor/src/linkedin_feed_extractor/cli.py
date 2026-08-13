@@ -118,6 +118,7 @@ def extract(
             output_dir=config.output_dir,
             log_level=config.log_level,
             headless=config.headless,
+            session_cookie=config.session_cookie,
         )
 
     # Run the async extraction
